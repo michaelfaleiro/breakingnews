@@ -1,0 +1,18 @@
+{
+  "name": "breakingnews",
+  "version": "1.0.0",
+  "description": "Projeto Notícias",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "Michael Faleiro",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
