@@ -1,6 +1,7 @@
 {
   "name": "breakingnews",
   "version": "1.0.0",
+  "type": "module",
   "description": "Projeto Notícias",
   "main": "index.js",
   "scripts": {
