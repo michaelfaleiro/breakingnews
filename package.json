@@ -5,7 +5,7 @@
   "description": "Projeto Notícias",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon src/index.js"
   },
   "author": "Michael Faleiro",
   "license": "ISC",
