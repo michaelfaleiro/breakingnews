@@ -12,7 +12,7 @@ export const create = async (req, res) => {
       title,
       text,
       banner,
-      user: { _id: "63f135f842322f14bc795d36" },
+      user: req.userId,
     });
     res.send(201);
   } catch (error) {
