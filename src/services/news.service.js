@@ -21,3 +21,39 @@ export const searchByTitleService = (title) =>
 
 export const byUserService = (id) =>
   News.find({ user: id }).sort({ _id: -1 }).populate("user");
+
+export const updateService = (id, title, text, banner) =>
+  News.findOneAndUpdate(
+    { _id: id },
+    { title, text, banner },
+    { rawResult: true }
+  );
+
+export const eraseService = (id) => News.findOneAndDelete({ _id: id });
+
+export const likeNewsService = (id, userId) =>
+  News.findOneAndUpdate(
+    { _id: id, "likes.userId": { $nin: [userId] } },
+    { $push: { likes: { userId, createdAt: new Date() } } }
+  );
+
+export const deleteLikeNewsService = (id, userId) =>
+  News.findOneAndUpdate({ _id: id }, { $pull: { likes: { userId } } });
+
+export const addCommentService = (id, comment, userId) => {
+  const idComment = Math.floor(Date.now() * Math.random()).toString(36);
+  return News.findOneAndUpdate(
+    { _id: id },
+    {
+      $push: {
+        comments: { idComment, userId, comment, createdAt: new Date() },
+      },
+    }
+  );
+};
+
+export const deleteCommentService = (idNews, idComment, userId) =>
+  News.findOneAndUpdate(
+    { _id: idNews },
+    { $pull: { comments: { idComment, userId } } }
+  );

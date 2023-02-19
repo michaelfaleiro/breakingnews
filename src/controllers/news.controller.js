@@ -1,3 +1,4 @@
+import { request } from "express";
 import {
   countNews,
   createService,
@@ -6,6 +7,12 @@ import {
   findByIdService,
   searchByTitleService,
   byUserService,
+  updateService,
+  eraseService,
+  likeNewsService,
+  deleteLikeNewsService,
+  addCommentService,
+  deleteCommentService,
 } from "../services/news.service.js";
 
 export const create = async (req, res) => {
@@ -180,6 +187,128 @@ export const byUser = async (req, res) => {
         username: item.user.username,
         userAvatar: item.user.avatar,
       })),
+    });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const update = async (req, res) => {
+  try {
+    const { title, text, banner } = req.body;
+    const { id } = req.params;
+
+    if (!title && !text && !banner) {
+      res.status(400).send({
+        message: "Submit at least one field to update the news",
+      });
+    }
+
+    const news = await findByIdService(id);
+
+    if (news.user.id != req.userId) {
+      return res.status(400).send({
+        message: "You didn't update this News ",
+      });
+    }
+
+    await updateService(id, title, text, banner);
+
+    return res.send({ message: "News Updated successfully" });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const erase = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const news = await findByIdService(id);
+
+    if (news.user.id != req.userId) {
+      return res.status(400).send({
+        message: "You didn't update this News ",
+      });
+    }
+
+    await eraseService(id);
+    return res.send({ message: "News deleted successfully" });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const likeNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const newsLiked = await likeNewsService(id, userId);
+
+    if (!newsLiked) {
+      await deleteLikeNewsService(id, userId);
+      return res.status(200).send({ message: "Like successfully removed" });
+    }
+
+    return res.send({
+      message: "Like done Successfully",
+    });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const addComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { comment } = req.body;
+
+    if (!comment) {
+      return res.status(400).send({
+        message: "Write a message to comment",
+      });
+    }
+
+    await addCommentService(id, comment, userId);
+    return res.send({
+      message: "Comment added successfully",
+    });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { idNews, idComment } = req.params;
+    const userId = req.userId;
+
+    const commentDeleted = await deleteCommentService(
+      idNews,
+      idComment,
+      userId
+    );
+
+    const commentFinder = commentDeleted.comments.find(
+      (comment) => comment.idComment === idComment
+    );
+
+    if (!commentFinder) {
+      return res.status(404).send({
+        message: "Comment not found",
+      });
+    }
+
+    if (commentFinder.userId !== userId) {
+      return res.status(400).send({
+        message: "You can't delete this comment",
+      });
+    }
+
+    return res.send({
+      message: "Comment removed successfully",
     });
   } catch (error) {
     return res.status(500).send({ message: error.message });
