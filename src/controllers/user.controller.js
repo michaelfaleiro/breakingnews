@@ -32,7 +32,7 @@ const findAll = async (req, res) => {
     if (users.length === 0) {
       return res.status(400).send({ message: "There are no users" });
     }
-    res.send(users);
+    return res.send(users);
   } catch (error) {
     return res.status(500).send({ message: error.message });
   }
